@@ -141,7 +141,9 @@ func signHandler(a *appContext, w http.ResponseWriter, r *http.Request) (int, er
 		return http.StatusBadRequest, errors.Wrap(err, "unable to extract key from request")
 	}
 	username := authprovider.Username(token)
+	principals := authprovider.Principals(token)
 	authprovider.Revoke(token) // We don't need this anymore.
+	keysigner.principals = keysigner.principals.append(principals...)
 	cert, err := keysigner.SignUserKey(req, username)
 	if err != nil {
 		return http.StatusInternalServerError, errors.Wrap(err, "error signing key")
